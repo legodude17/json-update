@@ -1,0 +1,20 @@
+{
+  "name": "json-update",
+  "description": "A way to update the properties in a JSON file without modifying formatting or comments (if present)",
+  "version": "0.0.0",
+  "main": "index.js",
+  "bin": "",
+  "homepage": "https://github.com/legodude17/json-update",
+  "author": "JDB (https://github.com/legodude17)",
+  "repository": "legodude17/json-update",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.5.1",
+    "eslint-plugin-unicorn": "^44.0.2",
+    "prettier": "^2.7.1"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "plugin:n/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:import/recommended",
+    "eslint:recommended",
+    "prettier"
+  ],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "unicorn/filename-case": "off",
+    "no-dupe-class-members": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "n/no-missing-import": "off",
+    "no-unused-vars": "off",
+    "unicorn/import-style": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  }
+}
