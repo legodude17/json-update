@@ -173,7 +173,7 @@ test("File Updater", async t => {
     exclude: [Updater.add, "coverage"],
     compilerOptions: Updater.delete
   });
-  updater.file = path.resolve("dist/result-package.json");
+  updater.file = path.resolve("/dev/null");
   await updater.save();
   t.snapshot(await fs.readFile(updater.file, "utf8"));
 });
