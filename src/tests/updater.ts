@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import test from "ava";
 import { FileUpdater, Updater } from "../index.js";
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 const BASIC = `{"test":true}`;
 const ARRAY = `{"test": [false, true]}`;
 
@@ -148,7 +149,7 @@ test("Complex Merge", t => {
     }
   });
   const str = updater.toString();
-  const obj = JSON.parse(str);
+  const obj = JSON.parse(str) as { test: object };
   t.deepEqual(
     obj,
     {

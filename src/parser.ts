@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-namespace */
 export type NodeType =
   | "object"
   | "array"
@@ -9,8 +11,8 @@ export type NodeType =
   | "null"
   | "whitespace"
   | "comment";
-const DIGITS = /^[0-9]$/;
-const WS = /[\n\r \t]/;
+const DIGITS = /^\d$/;
+const WS = /[\t\n\r ]/;
 
 export namespace Nodes {
   export interface Node {
@@ -100,7 +102,7 @@ function lineAt(data: string, pos: number): [string, number] {
 
 export default class Parser {
   #data: string;
-  #pos: number = 0;
+  #pos = 0;
   #padding: Nodes.Padding[] = [];
   constructor(data: string) {
     this.#data = data;
@@ -131,21 +133,28 @@ export default class Parser {
     this.#consumeWhitespace();
     const char = this.#cur;
     switch (char) {
-      case "{":
+      case "{": {
         return this.#parseObject();
-      case "[":
+      }
+      case "[": {
         return this.#parseArray();
-      case '"':
+      }
+      case '"': {
         return this.#parseString();
+      }
       case "+":
-      case "-":
+      case "-": {
         return this.#parseNumber();
-      case "n":
+      }
+      case "n": {
         return this.#parseLiteral<Nodes.Null>("null", "null", null);
-      case "t":
+      }
+      case "t": {
         return this.#parseLiteral<Nodes.Bool>("true", "boolean", true);
-      case "f":
+      }
+      case "f": {
         return this.#parseLiteral<Nodes.Bool>("false", "boolean", false);
+      }
       default: {
         if (DIGITS.test(char)) return this.#parseNumber();
         this.#raise("Unexpected " + char);
@@ -192,11 +201,7 @@ export default class Parser {
     node.value = "";
     let esacpe = false;
     while (this.#cur !== '"' || esacpe) {
-      if (this.#cur === "\\" && !esacpe) {
-        esacpe = true;
-      } else {
-        esacpe = false;
-      }
+      esacpe = this.#cur === "\\" && !esacpe ? true : false;
       node.value += this.#next();
     }
     this.#eat('"');
@@ -216,7 +221,7 @@ export default class Parser {
       this.#readDigits();
     }
     node.raw = this.#data.slice(start, this.#pos);
-    node.value = parseFloat(node.raw);
+    node.value = Number.parseFloat(node.raw);
     return this.#finishNode(node);
   }
 
@@ -319,7 +324,7 @@ export default class Parser {
   }
 
   #startNode<T extends Nodes.AnyNode>(type: T["type"]): T {
-    let before = [];
+    const before = [];
     if (type !== "whitespace" && type !== "comment") {
       before.push(...this.#padding);
       this.#padding = [];
@@ -337,7 +342,7 @@ export default class Parser {
       node.after = [...this.#padding];
       this.#padding = [];
     }
-    return node as T;
+    return node;
   }
 }
 
@@ -355,38 +360,49 @@ export function stringify(
 
 function stringifyInner(node: Nodes.AnyNode, parent?: Nodes.AnyNode): string {
   switch (node.type) {
-    case "array":
+    case "array": {
       return `[${stringify(node.elements, node)}]`;
-    case "object":
+    }
+    case "object": {
       return `{${stringify(node.properties, node)}}`;
-    case "property":
+    }
+    case "property": {
       return `${stringify(node.key)}:${stringify(node.value)}${
         parent?.type === "object" &&
         parent.properties.indexOf(node) === parent.properties.length - 1
           ? ""
           : ","
       }`;
-    case "element":
+    }
+    case "element": {
       return `${stringify(node.value)}${
         parent?.type === "array" &&
         parent.elements.indexOf(node) === parent.elements.length - 1
           ? ""
           : ","
       }`;
-    case "string":
+    }
+    case "string": {
       return `"${node.value}"`;
-    case "number":
+    }
+    case "number": {
       return node.raw;
-    case "boolean":
+    }
+    case "boolean": {
       return node.value ? "true" : "false";
-    case "null":
+    }
+    case "null": {
       return "null";
-    case "whitespace":
+    }
+    case "whitespace": {
       return node.value;
-    case "comment":
+    }
+    case "comment": {
       return node.raw;
-    default:
+    }
+    default: {
       throw new TypeError("Invalid node type: " + (node as Nodes.Node).type);
+    }
   }
 }
 
@@ -398,26 +414,30 @@ export function walk(
     depth: number
   ) => void,
   depth = 0,
-  parent: Nodes.AnyNode | undefined = undefined
+  parent?: Nodes.AnyNode
 ) {
   cb(node, parent, depth);
   switch (node.type) {
-    case "array":
+    case "array": {
       for (const elm of node.elements) {
         walk(elm, cb, depth + 1, node);
       }
       break;
-    case "object":
+    }
+    case "object": {
       for (const prop of node.properties) {
         walk(prop, cb, depth + 1, node);
       }
       break;
-    case "property":
+    }
+    case "property": {
       walk(node.key, cb, depth + 1, node);
       walk(node.value, cb, depth + 1, node);
       break;
-    case "element":
+    }
+    case "element": {
       walk(node.value, cb, depth + 1, node);
       break;
+    }
   }
 }

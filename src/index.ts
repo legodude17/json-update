@@ -1,5 +1,5 @@
 import Parser, { Nodes, stringify } from "./parser.js";
-import fs from "fs/promises";
+import fs from "node:fs/promises";
 
 interface StyleInfo {
   indent: string;
@@ -44,7 +44,7 @@ export class Updater {
     function walk(object: object) {
       for (const value of Object.values(object)) {
         if (Array.isArray(value)) value.unshift(Updater.add);
-        if (value && typeof value === "object") walk(value);
+        if (value && typeof value === "object") walk(value as object);
       }
     }
     walk(obj);
@@ -52,7 +52,7 @@ export class Updater {
   }
 
   remove(keys: string[]) {
-    const obj: { [k: string]: Symbol } = {};
+    const obj: { [k: string]: symbol } = {};
     for (const key of keys) obj[key] = Updater.delete;
     this.update(obj);
   }
@@ -107,26 +107,26 @@ export class Updater {
               if (idx > 0) node.value.elements.splice(idx, 1);
             }
           } else {
-            for (let i = 0; i < value.length; i++) {
-              if (this.#isNodeFor(value[i], node.value.elements[i]?.value))
+            for (const [i, element] of value.entries()) {
+              if (this.#isNodeFor(element, node.value.elements[i]?.value))
                 continue;
               node.value.elements[i] = this.#makeNode<Nodes.Element>(
                 "element",
                 {
-                  value: this.#nodeFor(value[i])
+                  value: this.#nodeFor(element)
                 }
               );
             }
           }
         } else if (node?.value.type === "object" && typeof value === "object") {
-          this.#updateInternal(value, node?.value, depth + 1);
+          this.#updateInternal(value as object, node?.value, depth + 1);
         } else if (
           (node?.value.type === "boolean" ||
             node?.value.type === "string" ||
             node?.value.type === "number") &&
           node?.value.type === typeof value
         ) {
-          node.value.value = value;
+          node.value.value = value as boolean | number | string;
         } else if (node) {
           node.value = this.#nodeFor(value);
         }
@@ -148,17 +148,20 @@ export class Updater {
       });
     }
     switch (typeof value) {
-      case "string":
+      case "string": {
         return this.#makeNode("string", { value }, this.#style.colon);
-      case "number":
+      }
+      case "number": {
         return this.#makeNode(
           "number",
           { value, raw: value.toLocaleString() },
           this.#style.colon
         );
-      case "boolean":
+      }
+      case "boolean": {
         return this.#makeNode("boolean", { value }, this.#style.colon);
-      case "object":
+      }
+      case "object": {
         return this.#makeNode("object", {
           properties: Object.entries(value).map(([key, value]) =>
             this.#makeNode<Nodes.Property>("property", {
@@ -167,8 +170,10 @@ export class Updater {
             })
           )
         });
-      default:
+      }
+      default: {
         throw new TypeError(`Cannot convert ${typeof value} to JSON`);
+      }
     }
   }
 
@@ -186,8 +191,8 @@ export class Updater {
     }
     if (node.type === "array" && Array.isArray(value)) {
       if (node.elements.length !== value.length) return false;
-      for (let i = 0; i < value.length; i++) {
-        if (!this.#isNodeFor(value[i], node.elements[i]?.value)) return false;
+      for (const [i, element] of value.entries()) {
+        if (!this.#isNodeFor(element, node.elements[i]?.value)) return false;
       }
       return true;
     }
@@ -209,8 +214,8 @@ export class Updater {
   #makeNode<T extends Nodes.AnyNode>(
     type: T["type"],
     obj: Partial<T>,
-    before: string = "",
-    after: string = ""
+    before = "",
+    after = ""
   ): T {
     return Object.assign({}, obj, {
       type,
@@ -243,8 +248,7 @@ export class Updater {
         const indent = str.replace(newline, "");
         const index2 = n.value.before.findIndex(p => p.type === "comment");
         const colon = stringify(n.value.before.slice(index2 + 1));
-        if (newline && indent) return { newline, indent, colon };
-        else return false;
+        return newline && indent ? { newline, indent, colon } : false;
       })
       .find(Boolean);
     if (style) this.#style = style;
@@ -257,7 +261,7 @@ export class FileUpdater extends Updater {
     super(data);
     this.file = path;
   }
-  static async load(path: string) {
+  static async load(this: void, path: string) {
     return new FileUpdater(await fs.readFile(path, "utf8"), path);
   }
 

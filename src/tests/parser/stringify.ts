@@ -10,7 +10,7 @@ for (const { test, name } of VALID) {
 testFn("Invalid AST", t => {
   t.throws(
     () => {
-      /* @ts-expect-error */
+      /* @ts-expect-error Need to provide invalid data to test */
       stringify({ type: "blep", before: [], after: [] });
     },
     {
