@@ -166,16 +166,12 @@ test("Complex Merge", t => {
 });
 
 test("File Updater", async t => {
-  const updater = await FileUpdater.load(path.resolve("package.json"));
+  const updater = await FileUpdater.load(path.resolve("tsconfig.json"));
   updater.update({
-    version: "1.0.1",
-    devDependencies: Updater.delete,
-    scripts: Updater.delete,
-    ava: Updater.delete,
-    repository: {
-      type: "git",
-      url: "legodude17/json-update"
-    }
+    extends: "No thanks",
+    include: ["src/**/*.ts"],
+    exclude: [Updater.add, "coverage"],
+    compilerOptions: Updater.delete
   });
   updater.file = path.resolve("dist/result-package.json");
   await updater.save();
