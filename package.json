@@ -1,7 +1,7 @@
 {
   "name": "@legodude/json-update",
   "description": "A way to update the properties in a JSON file without modifying formatting or comments (if present)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/legodude17/json-update",
   "author": "JDB (https://github.com/legodude17)",
   "repository": "legodude17/json-update",
