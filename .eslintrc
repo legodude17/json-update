@@ -4,8 +4,6 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:n/recommended",
     "plugin:unicorn/recommended",
-    "plugin:import/typescript",
-    "plugin:import/recommended",
     "eslint:recommended",
     "prettier"
   ],

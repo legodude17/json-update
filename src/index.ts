@@ -261,8 +261,11 @@ export class FileUpdater extends Updater {
     super(data);
     this.file = path;
   }
-  static async load(this: void, path: string) {
-    return new FileUpdater(await fs.readFile(path, "utf8"), path);
+  static async load<T extends FileUpdater>(
+    this: { new (data: string, path: string): T },
+    path: string
+  ): Promise<T> {
+    return new this(await fs.readFile(path, "utf8"), path);
   }
 
   save() {
@@ -270,7 +273,7 @@ export class FileUpdater extends Updater {
   }
 }
 
-export default FileUpdater.load;
+export default FileUpdater.load.bind(FileUpdater);
 
 export const add = Updater.add;
 export const del = Updater.delete;
