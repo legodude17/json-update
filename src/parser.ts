@@ -108,12 +108,6 @@ export default class Parser {
     this.#data = data;
   }
 
-  set data(data: string) {
-    this.#data = data;
-    this.#pos = 0;
-    this.#padding = [];
-  }
-
   parse(): Nodes.Object {
     this.#consumeWhitespace();
     return this.#parseObject();

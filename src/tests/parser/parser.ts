@@ -7,9 +7,3 @@ test("Create Parser", t => {
   new Parser(STRING);
   t.pass();
 });
-
-test("Set data", t => {
-  const parser = new Parser("");
-  parser.data = STRING;
-  t.pass();
-});

@@ -11,10 +11,9 @@ test("Create", t => {
   t.is(updater.toString(), BASIC);
 });
 
-test("Update data", t => {
-  const updater = new Updater("{}");
-  updater.data = BASIC;
-  t.is(updater.toString(), BASIC);
+test("Get data", t => {
+  const updater = new Updater(BASIC);
+  t.deepEqual(updater.data, { test: true });
 });
 
 test("Style", t => {
@@ -129,6 +128,12 @@ test("Delete missing", t => {
       message: "Cannot delete missing property"
     }
   );
+});
+
+test("Data is updated", t => {
+  const updater = new Updater(BASIC);
+  updater.update({ test2: false });
+  t.deepEqual(updater.data, { test: true, test2: false });
 });
 
 test("Complex Merge", t => {

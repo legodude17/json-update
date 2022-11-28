@@ -25,15 +25,8 @@ export class Updater {
     return Object.assign({}, this.#style);
   }
 
-  set data(data: string) {
-    this.#data = data;
-    this.reparse();
-  }
-
-  reparse() {
-    this.#parser.data = this.#data;
-    this.#ast = this.#parser.parse();
-    this.#calcStyle();
+  get data(): object {
+    return JSON.parse(this.toString()) as object;
   }
 
   toString() {
