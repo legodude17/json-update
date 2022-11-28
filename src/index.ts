@@ -254,10 +254,10 @@ export class FileUpdater extends Updater {
     super(data);
     this.file = path;
   }
-  static async load<T extends FileUpdater>(
-    this: { new (data: string, path: string): T },
+  static async load(
+    this: { new (data: string, path: string): FileUpdater },
     path: string
-  ): Promise<T> {
+  ): Promise<FileUpdater> {
     return new this(await fs.readFile(path, "utf8"), path);
   }
 
